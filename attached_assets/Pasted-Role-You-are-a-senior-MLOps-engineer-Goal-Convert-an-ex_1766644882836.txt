@@ -1,0 +1,175 @@
+Role: You are a senior MLOps engineer.
+Goal: Convert an existing XGBoost no‑show prediction model into a full production‑grade ML CI/CD pipeline with Airflow orchestration.
+
+📌 Project Context
+I have an existing Python model that:
+
+Loads a medical appointment no‑show dataset
+
+Performs extensive feature engineering (time‑based + patient history)
+
+Trains and tunes an XGBoost classifier
+
+Evaluates using ROC‑AUC, F1, accuracy
+
+I want this converted into a clean, reproducible, CI/CD‑ready ML system.
+
+🧱 Required Architecture
+Implement the following stack exactly:
+
+GitHub
+↓
+DVC + S3
+↓
+Great Expectations
+↓
+scikit‑learn / XGBoost
+↓
+MLflow
+↓
+GitHub Actions (CI)
+↓
+Docker
+↓
+FastAPI
+↓
+Kubernetes
+↓
+Evidently AI + Prometheus + Grafana
+Include Apache Airflow as the workflow orchestrator (Jenkins analogy for ML).
+
+📁 Repository Structure (Must Follow)
+noshow-ml/
+├── data/
+│   ├── raw/
+│   └── processed/
+├── src/
+│   ├── data_ingestion.py
+│   ├── data_validation.py
+│   ├── feature_engineering.py
+│   ├── train.py
+│   ├── evaluate.py
+│   └── predict.py
+├── airflow/
+│   └── dags/noshow_pipeline.py
+├── docker/
+│   └── Dockerfile
+├── .github/workflows/ci.yml
+├── dvc.yaml
+├── requirements.txt
+└── README.md
+🧩 Implementation Requirements
+1️⃣ Data & Versioning
+Replace hardcoded dataset paths with data/raw/noshow.csv
+
+Configure DVC with S3 as the remote
+
+Ensure reproducible data pulls via dvc pull
+
+2️⃣ Data Validation
+Use Great Expectations
+
+Validate:
+
+Age ∈ [0,120]
+
+Appointment day ≥ scheduled day
+
+No‑show ∈ {0,1}
+
+Fail pipeline if validation fails
+
+3️⃣ Feature Engineering
+Move all feature logic into feature_engineering.py
+
+Expose a pure function: build_features(df) -> X, y
+
+Ensure this is reusable for both training and inference
+
+4️⃣ Model Training
+Use XGBoost
+
+Handle class imbalance with scale_pos_weight
+
+Do not run GridSearch in CI (only scheduled runs)
+
+5️⃣ Experiment Tracking & Registry
+Integrate MLflow
+
+Log:
+
+Parameters
+
+ROC‑AUC, F1
+
+Trained model
+
+Register model as NoShowXGBoost
+
+Support Staging → Production promotion
+
+6️⃣ Airflow Orchestration
+Create an Airflow DAG with tasks:
+
+ingest_data
+→ validate_data
+→ feature_engineering
+→ train_model
+→ evaluate_model
+→ register_model
+Each task should call the corresponding Python module
+
+7️⃣ CI Pipeline
+GitHub Actions should:
+
+Install dependencies
+
+Run tests
+
+Run data validation
+
+Trigger Airflow DAG (not heavy training)
+
+8️⃣ Model Serving
+Serve the Production model using FastAPI
+
+Load model from MLflow Registry
+
+Expose /predict endpoint returning no‑show probability
+
+9️⃣ Deployment & Monitoring
+Dockerize the FastAPI service
+
+Kubernetes manifests optional but preferred
+
+Integrate:
+
+Evidently AI for drift detection
+
+Prometheus for metrics
+
+Grafana dashboards
+
+📝 Documentation
+Write a clear README explaining:
+
+Architecture
+
+Pipeline flow
+
+How CI/CD works
+
+How Airflow fits vs Jenkins
+
+🎯 Output Expectations
+Generate complete, runnable code
+
+Follow best MLOps practices
+
+No notebooks
+
+No hardcoded credentials
+
+Clean, modular, production‑ready implementation
+
+Begin by generating the repository structure and core Python modules.
