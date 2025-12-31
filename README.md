@@ -29,5 +29,5 @@ python src/train.py
 uvicorn src.predict:app --host 0.0.0.0 --port 8000
 ```
 
-### Airflow
-Ensure Airflow is running and drop the DAGs in the dags folder.
+### Actions
+GitHub Actions orchestrates the CI/CD pipeline
